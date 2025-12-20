@@ -2,6 +2,11 @@
     <test name="browser">
         <classes>
             <class name="herokuApp.LoginTest"/>
+            <class name="browsers.ChromeTest">
+                <methods>
+                    <include name="headlessMode"/>
+                </methods>
+            </class>
         </classes>
     </test>
 </suite>
