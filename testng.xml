@@ -1,11 +1,7 @@
 <suite name="selenium">
     <test name="browser">
         <classes>
-            <class name="browsers.ChromeTest">
-                <methods>
-                    <include name="headlessMode"/>
-                </methods>
-            </class>
+            <class name="herokuApp.LoginTest"/>
         </classes>
     </test>
 </suite>
