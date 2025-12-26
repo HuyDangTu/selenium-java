@@ -7,6 +7,7 @@
                     <include name="headlessMode"/>
                 </methods>
             </class>
+            <class name="practise.CheckboxesTest"/>
         </classes>
     </test>
 </suite>
