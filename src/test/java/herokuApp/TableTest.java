@@ -7,7 +7,9 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 
 public class TableTest {
@@ -35,6 +37,57 @@ public class TableTest {
         Assert.assertEquals(firstName+" "+lastName, "Jason Doe");
     }
 
+
+    @Test
+    void verifyMaxDuePerson() {
+            WebDriver driver = new ChromeDriver();
+            driver.get("https://the-internet.herokuapp.com/tables");
+            //Step1: get due column
+            List<Double> dueList = driver
+                    .findElements(By.xpath("//table[@id='table1']/tbody/tr/td[4]"))
+                    .stream()
+                    .map(cell -> Double.valueOf(cell.getText().replace("$", "")))
+                    .toList();
+
+            // step2: find max due
+            Double maxDue = dueList.stream().max(Comparator.naturalOrder()).get();
+            // step 3: find max due index
+            int maxDueIndex = dueList.indexOf(maxDue);
+
+            // tim index of max due value expected 2+1
+            //step 4: get firstname lastname with maxdue index +1 ==> array index from 0, xpath index from 1
+            String lastname = driver.findElement(By.xpath(String.format("//table[@id='table1']/tbody/tr[%d]/td[1]", maxDueIndex + 1))).getText();// => return cell[1][1]
+            String firstName = driver.findElement(By.xpath(String.format("//table[@id='table1']/tbody/tr[%d]/td[2]", maxDueIndex + 1))).getText();// => return cell[1][1]
+
+            Assert.assertEquals(String.format("%s %s", firstName, lastname), "Jason Doe");
+
+            driver.quit();
+    }
+    @Test
+    void minDue() {
+        WebDriver driver = new ChromeDriver();
+        driver.get("https://the-internet.herokuapp.com/tables");
+
+        List<Double> dueList = driver
+                .findElements(By.xpath("//table[@id='table1']/tbody/tr/td[4]"))
+                .stream()
+                .map(cell -> Double.valueOf(cell.getText().replace("$", "")))
+                .toList();
+
+        // step2: find ,im due
+        double min = dueList.stream().min(Comparator.naturalOrder()).get();
+
+        List<String> names = new ArrayList();
+        for (int i = 0; i < dueList.size(); i++) {
+            if (dueList.get(i).equals(min)) {
+                String lastName = driver.findElement(By.xpath(String.format("//table[@id='table1']//tbody//tr[%d]//td[1]", i + 1))).getText();
+                String firstName = driver.findElement(By.xpath(String.format("//table[@id='table1']//tbody//tr[%d]//td[2]", i + 1))).getText();
+                names.add(firstName + lastName);
+            }
+            //Assert.assertTrue(names, List.of("John Smith", "Tim Conway"));
+            driver.quit();
+        }
+    }
     public class Person{
 
         String lastName;
@@ -50,7 +103,7 @@ public class TableTest {
     }
 
     @Test
-    void minDue() {
+    void minDueTest() {
         WebDriver driver = new ChromeDriver();
         driver.get("http://the-internet.herokuapp.com/tables");
 
@@ -68,5 +121,6 @@ public class TableTest {
 
         System.out.print(maxDuePerson.firstName+" "+maxDuePerson.lastName+" "+maxDuePerson.due);
     }
+
 
 }
