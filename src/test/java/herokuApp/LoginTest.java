@@ -13,11 +13,7 @@ import org.testng.annotations.*;
 
 public class LoginTest {
 
-
     WebDriver driver;
-
-
-
 
     @AfterMethod
     void tearDown(){
@@ -29,7 +25,7 @@ public class LoginTest {
         return new Object[][]{
                 {"chrome","--headless"},
                 {"edge","--headless"},
-                {"firefox",""}
+                {"firefox","--headless"}
         };
     }
 
