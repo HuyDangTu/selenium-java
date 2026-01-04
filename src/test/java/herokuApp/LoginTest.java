@@ -4,18 +4,59 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.edge.EdgeDriver;
+import org.openqa.selenium.edge.EdgeOptions;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
 import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.testng.annotations.*;
 
 public class LoginTest {
 
-    @Test
-    void successfullyLoginWithCredential() throws InterruptedException {
 
-        ChromeOptions option = new ChromeOptions();
-        option.addArguments("--headless");
-        WebDriver driver = new ChromeDriver(option);
+    WebDriver driver;
 
+
+
+
+    @AfterMethod
+    void tearDown(){
+        driver.quit();
+    }
+
+    @DataProvider
+    Object[][] browserDataProvider() {
+        return new Object[][]{
+                {"chrome","--headless"},
+                {"edge","--headless"},
+                {"firefox",""}
+        };
+    }
+
+    void setUp(String browser,String option){
+        switch (browser) {
+            case "chrome":
+                ChromeOptions chromeOption = new ChromeOptions();
+                chromeOption.addArguments(option);
+                driver = new ChromeDriver(chromeOption);
+                break;
+            case "edge":
+                EdgeOptions edgeOption = new EdgeOptions();
+                edgeOption.addArguments(option);
+                driver = new EdgeDriver(edgeOption);
+                break;
+            case "firefox":
+                FirefoxOptions firefoxOption = new FirefoxOptions();
+                firefoxOption.addArguments(option);
+                driver = new FirefoxDriver(firefoxOption);
+                break;
+        }
+    }
+
+    @Test(dataProvider = "browserDataProvider")
+    void successfullyLoginWithCredential(String browser,String options) throws InterruptedException {
+
+        setUp(browser,options);
         driver.get("https://the-internet.herokuapp.com/login");
 
         driver.findElement(By.id("username")).sendKeys("tomsmith");
@@ -24,11 +65,10 @@ public class LoginTest {
         driver.findElement(By.cssSelector("button[type=submit")).click();
         Assert.assertTrue(driver.findElement(By.className("success")).getText().contains("You logged into a secure area!"));
     }
-    @Test
-    void failedToLoginWithInvalidUsername() {
-        ChromeOptions option = new ChromeOptions();
-        option.addArguments("--headless");
-        WebDriver driver = new ChromeDriver(option);
+
+    @Test(dataProvider = "browserDataProvider")
+    void failedToLoginWithInvalidUsername(String browser,String options) {
+        setUp(browser,options);
         driver.get("https://the-internet.herokuapp.com/login");
 
         driver.findElement(By.id("username")).sendKeys("InvalidUsername");
@@ -37,11 +77,10 @@ public class LoginTest {
         driver.findElement(By.cssSelector("button[type='submit']")).click();
         Assert.assertTrue(driver.findElement(By.className("error")).getText().contains("Your username is invalid!"));
     }
-    @Test
-    void failedToLoginWithInvalidPassword() {
-        ChromeOptions option = new ChromeOptions();
-        option.addArguments("--headless");
-        WebDriver driver = new ChromeDriver(option);
+
+    @Test(dataProvider = "browserDataProvider")
+    void failedToLoginWithInvalidPassword(String browser,String options) {
+        setUp(browser,options);
         driver.get("https://the-internet.herokuapp.com/login");
 
         driver.findElement(By.id("username")).sendKeys("tomsmith");

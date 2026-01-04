@@ -12,11 +12,14 @@ public class NestedFrameTest {
         WebDriver driver = new ChromeDriver();
         driver.get("https://the-internet.herokuapp.com/nested_frames");
 
+
+        //Switch to a web element frame
         driver.switchTo().frame(driver.findElement(By.name("frame-top")));
         driver.switchTo().frame(driver.findElement(By.name("frame-left")));
 
         Assert.assertEquals(driver.findElement(By.xpath("/html/body")).getText(),"LEFT");
 
+        //Switch to the parent frame of the current frame
         driver.switchTo().parentFrame();//frame top
         driver.switchTo().frame(driver.findElement(By.name("frame-middle")));
         Assert.assertEquals(driver.findElement(By.id("content")).getText(),"MIDDLE");
@@ -25,6 +28,7 @@ public class NestedFrameTest {
         driver.switchTo().frame(driver.findElement(By.name("frame-right")));
         Assert.assertEquals(driver.findElement(By.xpath("/html/body")).getText(),"RIGHT");
 
+        // Switch to default content (main html)
         driver.switchTo().defaultContent();
         driver.switchTo().frame(driver.findElement(By.name("frame-bottom")));
         Assert.assertEquals(driver.findElement(By.xpath("/html/body")).getText(),"BOTTOM");
