@@ -1,74 +1,53 @@
 package herokuApp;
 
+import core.BaseTest;
+import herokuApp.pages.DropdownPage;
+import herokuApp.pages.MultipleSelectPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.Select;
 import org.testng.Assert;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.testng.annotations.*;
+import utils.Browser;
 
-public class DropdownTest {
+import java.util.List;
 
-    @Test
-    void successfullySelectOption1(){
+import static utils.Browser.launchBrowser;
+import static utils.Browser.quit;
 
-        WebDriver driver = new ChromeDriver();
-        driver.get("https://the-internet.herokuapp.com/dropdown");
+public class DropdownTest extends BaseTest {
 
-        driver.findElement(By.cssSelector("#dropdown")).click();
-        driver.findElement(By.cssSelector("option[value='1']")).click();
-
-        //Assert.assertTrue(driver.findElement(By.cssSelector("option[value='1']")).isSelected());
-        Assert.assertTrue(driver.findElement(By.xpath("//option[.='Option 1']")).isSelected());
-
-        driver.quit();
+    @BeforeClass
+    void setUp(){
+        launchBrowser("chrome");
     }
 
-    @Test
-    void successfullySelectOption2(){
-
-        WebDriver driver = new ChromeDriver();
-        driver.get("https://the-internet.herokuapp.com/dropdown");
-
-        Select select = new Select(driver.findElement(By.cssSelector("#dropdown")));
-        //select.selectByValue("2");
-        select.selectByVisibleText("Option 2");
-
-        //Assert.assertTrue(driver.findElement(By.cssSelector("option[value='1']")).isSelected());
-        Assert.assertTrue(driver.findElement(By.xpath("//option[.='Option 2']")).isSelected());
-
-        driver.quit();
+    @DataProvider
+    Object[][] options(){
+        return new Object[][]{
+                {"Option 1"},
+                {"Option 2"}
+        };
     }
 
+    @Test(dataProvider="options")
+    void successfullySelectOption(String option){
+        DropdownPage dropdownPage = new DropdownPage();
+        dropdownPage.open();
+        dropdownPage.selectOption(option);
+        Assert.assertTrue(dropdownPage.isOptionSelected(option));
+    }
 
     @Test
     void successfullySelectMultipleOption() {
-        WebDriver driver = new ChromeDriver();
-        driver.get("https://output.jsbin.com/osebed/2");
-        Select select = new Select(driver.findElement(By.id("fruits")));
+        MultipleSelectPage multipleSelectPage = new MultipleSelectPage();
+        multipleSelectPage.open();
 
-        select.selectByVisibleText("Banana");
-        select.selectByVisibleText("Apple");
+        multipleSelectPage.selectOptions(List.of("Banana","Apple"));
+        Assert.assertEquals(multipleSelectPage.isOptionsSelected(List.of("Banana","Apple")),List.of(true,true));
 
-        Assert.assertTrue(driver.findElement(By.xpath("//option[.='Banana']")).isSelected());
-        Assert.assertTrue(driver.findElement(By.xpath("//option[.='Apple']")).isSelected());
-
-        select.deselectAll();
-        Assert.assertFalse(driver.findElement(By.xpath("//option[.='Banana']")).isSelected());
-        Assert.assertFalse(driver.findElement(By.xpath("//option[.='Apple']")).isSelected());
-        Assert.assertFalse(driver.findElement(By.xpath("//option[.='Orange']")).isSelected());
-        Assert.assertFalse(driver.findElement(By.xpath("//option[.='Grape']")).isSelected());
+        multipleSelectPage.deselectAll();
+        Assert.assertEquals(multipleSelectPage.isOptionsSelected(List.of("Banana","Apple","Orange","Grape")),List.of(false,false,false,false));
     }
-
-    private By getOption(String visibleText) {
-        return By.cssSelector(String.format("//option[.='%s']", visibleText));
-    }
-
-    public boolean isSelected(By locator){
-        WebDriver driver = new ChromeDriver();
-        return driver.findElement(locator).isSelected();
-    }
-
 }

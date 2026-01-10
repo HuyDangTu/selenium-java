@@ -1,7 +1,13 @@
 <suite name="selenium">
     <test name="browser">
+        <parameter name="username" value="invalidUsrName"/>
+        <parameter name="password" value="invalidpassword"/>
         <classes>
-            <class name="herokuApp.LoginTest"/>
+            <class name="herokuApp.LoginTest">
+                <methods>
+                    <include name="successfullyLoginWithCredential"/>
+                </methods>
+            </class>
             <class name="browsers.ChromeTest">
                 <methods>
                     <include name="headlessMode"/>
