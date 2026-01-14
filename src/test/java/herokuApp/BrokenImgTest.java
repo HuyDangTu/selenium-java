@@ -1,25 +1,31 @@
 package herokuApp;
 
+import core.BaseTest;
+import herokuApp.pages.BrokenImgPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.testng.Assert;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-public class BrokenImgTest {
+import java.util.List;
 
+import static utils.Browser.launchBrowser;
+
+public class BrokenImgTest extends BaseTest {
+    @BeforeClass
+    void setUp(){
+        launchBrowser("chrome");
+    }
     @Test
     void BrokenImgTest(){
-        WebDriver driver = new ChromeDriver();
-        driver.get("https://the-internet.herokuapp.com/broken_images");
 
-        driver.findElements(By.xpath("//div/img")).forEach(img -> {
-            int natureHeight = Integer.parseInt(img.getDomProperty("naturalHeight"));
-            int natureWeight = Integer.parseInt(img.getDomProperty("naturalHeight"));
-            Assert.assertTrue(natureWeight>0);
-            Assert.assertTrue(natureHeight>0);
-        });
-        driver.quit();
+        BrokenImgPage brokenImgPage = new BrokenImgPage();
+        brokenImgPage.open();
+
+        Assert.assertTrue(brokenImgPage.checkImageBroken(By.xpath("//div/img[3]")));
+        Assert.assertEquals(brokenImgPage.checkImagesBroken(By.xpath("//div/img")), List.of(false,false,true));
     }
 
 }

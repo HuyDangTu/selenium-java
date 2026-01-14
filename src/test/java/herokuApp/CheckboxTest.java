@@ -1,60 +1,51 @@
 package herokuApp;
 
+import core.BaseTest;
+import herokuApp.pages.CheckboxPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-public class CheckboxTest {
+import static utils.Browser.launchBrowser;
 
-    WebDriver driver;
+public class CheckboxTest extends BaseTest {
 
-    @BeforeMethod
+    //WebDriver driver;
+    //CheckboxPage checkboxPage;
+    @BeforeClass
     void setUp(){
-         driver = new ChromeDriver();
-    }
-
-    @AfterMethod
-    void tearDown(){
-        driver.quit();
+        launchBrowser("chrome");
     }
 
     @Test
     void successfullyCheckCheckboxes(){
-        driver.get("https://the-internet.herokuapp.com/checkboxes");
-        check(By.cssSelector("#checkboxes > input:nth-child(1)"));
-        Assert.assertTrue(driver.findElement(By.cssSelector("#checkboxes > input:nth-child(1)")).isSelected());
+        CheckboxPage checkboxPage = new CheckboxPage();
+        checkboxPage.open();
 
-        check(By.cssSelector("#checkboxes > input:nth-child(3)"));
-        Assert.assertTrue(driver.findElement(By.cssSelector("#checkboxes > input:nth-child(3)")).isSelected());
+        checkboxPage.checkTheCheckbox(By.cssSelector("#checkboxes > input:nth-child(1)"));
+        Assert.assertTrue(checkboxPage.isCheckBoxChecked(By.cssSelector("#checkboxes > input:nth-child(2)")));
+
+        checkboxPage.checkTheCheckbox(By.cssSelector("#checkboxes > input:nth-child(3)"));
+        Assert.assertTrue(checkboxPage.isCheckBoxChecked(By.cssSelector("#checkboxes > input:nth-child(3)")));
     }
 
     @Test
     void successfullyUncheckCheckboxes(){
-        driver.get("https://the-internet.herokuapp.com/checkboxes");
-        unCheck(By.cssSelector("#checkboxes > input:nth-child(1)"));
-        Assert.assertFalse(driver.findElement(By.cssSelector("#checkboxes > input:nth-child(1)")).isSelected());
+        CheckboxPage checkboxPage = new CheckboxPage();
+        checkboxPage.open();
 
-        unCheck(By.cssSelector("#checkboxes > input:nth-child(3)"));
-        Assert.assertFalse(driver.findElement(By.cssSelector("#checkboxes > input:nth-child(3)")).isSelected());
+        checkboxPage.uncheckTheCheckbox(By.cssSelector("#checkboxes > input:nth-child(1)"));
+        Assert.assertFalse(checkboxPage.isCheckBoxChecked(By.cssSelector("#checkboxes > input:nth-child(1)")));
+
+        checkboxPage.uncheckTheCheckbox(By.cssSelector("#checkboxes > input:nth-child(3)"));
+        Assert.assertFalse(checkboxPage.isCheckBoxChecked(By.cssSelector("#checkboxes > input:nth-child(3)")));
     }
 
-    void check(By locator ) {
-        WebElement checkbox1 = driver.findElement(locator);
-        if (!checkbox1.isSelected()) {
-            checkbox1.click();
-        }
-    }
-
-    void unCheck(By locator){
-        WebElement checkbox1 =  driver.findElement(locator);
-        if(checkbox1.isSelected()){
-            checkbox1.click();
-        }
-    }
 }
 

@@ -1,26 +1,30 @@
 package herokuApp;
 
+import herokuApp.pages.DragAndDropPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.interactions.Actions;
 import org.testng.Assert;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import static utils.Browser.launchBrowser;
 
 public class DragDropTest {
+
+    @BeforeClass
+    void setUp(){
+        launchBrowser("chrome");
+    }
+
     @Test
     void dragDropTest() {
-        WebDriver driver = new ChromeDriver();
-        driver.get("https://the-internet.herokuapp.com/drag_and_drop");
+        DragAndDropPage dragAndDropPage = new DragAndDropPage();
+        dragAndDropPage.open();
+        dragAndDropPage.dragAndDropElement(By.id("column-a"),By.id("column-b"));
 
-        Actions actions = new Actions(driver);
-        WebElement source = driver.findElement(By.id("column-a"));
-        WebElement target = driver.findElement(By.id("column-b"));
-
-        actions.dragAndDrop(source, target).perform();
-
-        Assert.assertTrue(driver.findElement(By.cssSelector("#column-a header")).getText().contains("B"));
-        Assert.assertTrue(driver.findElement(By.cssSelector("#column-b header")).getText().contains("A"));
+        Assert.assertTrue(dragAndDropPage.checkDragAndDropSuccess(By.cssSelector("#column-a header"),"B"));
+        Assert.assertTrue(dragAndDropPage.checkDragAndDropSuccess(By.cssSelector("#column-b header"),"A"));
     }
 }

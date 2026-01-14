@@ -9,17 +9,19 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
 
 import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Browser {
     private static WebDriver driver;
     private static int MAX_TIMEOUT_SECOND = 20;
     public static WebDriverWait wait;
     public static Actions actions;
-
 
     public static void launchBrowser(String name){
         switch (name.toLowerCase()){
@@ -106,7 +108,64 @@ public class Browser {
             throw new RuntimeException(e);
         }
     }
+
     public static String getCurrentUrl(){
         return driver.getCurrentUrl();
     }
+
+    public static void rightClickContextMenu(By locator){
+        Actions actions = new Actions(driver);
+        actions.contextClick(driver.findElement(locator)).perform();
+    }
+
+    public static void acceptAlert(){
+        driver.switchTo().alert().accept();
+    }
+
+    public static boolean isMessageDisplayed(By locator, String text){
+        return driver.findElement(locator)
+                .getText()
+                .contains(text);
+    }
+
+    public static boolean isImageBroken(By locator){
+        WebElement img = driver.findElement(locator);
+        int natureHeight = Integer.parseInt(img.getDomProperty("naturalHeight"));
+        int natureWidth = Integer.parseInt(img.getDomProperty("naturalWidth"));
+        return natureWidth>0 && natureHeight>0;
+    }
+
+    public static List<Boolean> isImagesBroken(By locator){
+
+        List <Boolean> results = new ArrayList();
+        driver.findElements(locator).forEach(img -> {
+            int natureHeight = Integer.parseInt(img.getDomProperty("naturalHeight"));
+            int natureWidth = Integer.parseInt(img.getDomProperty("naturalWidth"));
+            if (natureWidth>0 && natureHeight>0) {
+                results.add(true);
+            } else {
+                results.add(false);
+            }
+        });
+        return results;
+    }
+
+    public static void dragAndDropElements(By source, By target){
+        Actions actions = new Actions(driver);
+        WebElement sourceE = driver.findElement(source);
+        WebElement targetE = driver.findElement(target);
+        actions.dragAndDrop(sourceE, targetE).perform();
+    }
+
+
+    public static void scrollToBotton(int offset) throws InterruptedException {
+        Actions actions = new Actions(driver);
+
+        for (int i = 0; i < offset; i++) {
+            actions.scrollByAmount(0,1000).perform();
+            Thread.sleep(1000);
+        }
+    }
+
+
 }
